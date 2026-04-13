@@ -34,25 +34,54 @@
 
 <script>
     let form = document.getElementById("form");
+
     let input = document.getElementById("input");
+
     let loading = document.getElementById("loading");
+
     let table = document.getElementById("table");
+
     let body = document.getElementById("body");
 
-
-    
-    form.addEventListener("submit", function(e) {
+    form.addEventListener("submit", async function(e) {
         e.preventDefault();
 
         table.style.display = "none";
         body.innerHTML = "";
 
         loading.style.display = "block";
+
+        let name = input.value.split(" ").join("+");
+
+        let res = await fetch(`https://openlibrary.org/search.json?title=${name}`);
+        let data = await res.json();
+
+        loading.style.display = "none";
+
+        table.style.display = "table";
+
+        for (let i = 0; i < data.docs.length; i++) {
+            let row = document.createElement("tr");
+
+            let title = document.createElement("td");
+            title.textContent = data.docs[i].title;
+
+            let author = document.createElement("td");
+            if (data.docs[i].author_name) {
+                author.textContent = data.docs[i].author_name[0];
+            } else {
+                author.textContent = "No Answer";
+            }
+
+            row.appendChild(title);
+            row.appendChild(author);
+            body.appendChild(row);
+        }
     });
+
+
+
+
 </script>
-
-
-
-
 </body>
 </html>
